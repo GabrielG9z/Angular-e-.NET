@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Proeventos.API.Data;
 using Proeventos.API.Models;
 
 namespace Proeventos.API.Controllers
@@ -17,33 +18,36 @@ namespace Proeventos.API.Controllers
             // O IEnumerable espera receber um Array usamos pois trazemos os dados através de funções
             // E assim exibimos como um Array, isso deve otimizar tempo, se estiver certo voltarei aqui pra afirmar, se for pra corrigir também :)
        
-        public IEnumerable<Evento> _evento = new Evento[] {
+        // public IEnumerable<Evento> _evento = new Evento[] {
 
-                    new Evento() {
-                    EventoId = 1,
-                    Tema = "Angular e .NET5",
-                    Local = "Itaquaquecetuba",
-                    Lote = "Os cupinxas",
-                    QtdesPessoas = "5",
-                    DataEvento = DateTime.Now.AddDays(17).ToString(),
-                    ImageURL = "foto.png"
-                },
+            //         new Evento() {
+            //         EventoId = 1,
+            //         Tema = "Angular e .NET5",
+            //         Local = "Itaquaquecetuba",
+            //         Lote = "Os cupinxas",
+            //         QtdesPessoas = "5",
+            //         DataEvento = DateTime.Now.AddDays(17).ToString(),
+            //         ImageURL = "foto.png"
+            //     },
 
-                new Evento() {
-                    EventoId = 2,
-                    Tema = "Angular e suas novidades",
-                    Local = "Itapecirica da Serra",
-                    Lote = "3° Lote ",
-                    QtdesPessoas = "5",
-                    DataEvento = DateTime.Now.AddDays(17).ToString("dd/mm/yyyy"),
-                    ImageURL = "foto1.png"
-                }
-            };
+            //     new Evento() {
+            //         EventoId = 2,
+            //         Tema = "Angular e suas novidades",
+            //         Local = "Itapecirica da Serra",
+            //         Lote = "3° Lote ",
+            //         QtdesPessoas = "5",
+            //         DataEvento = DateTime.Now.AddDays(17).ToString("dd/mm/yyyy"),
+            //         ImageURL = "foto1.png"
+            //     }
+            // };
             
 
+        private readonly DataContexto contexto;
+        public DataContexto Contexto { get; set; }
         
-        public EventoController()
+        public EventoController(DataContexto contexto)
         {
+            this.contexto = contexto;
             
         }
         
@@ -53,15 +57,18 @@ namespace Proeventos.API.Controllers
         {
             
             {
-                return _evento;    
+                return contexto.Eventos;
             }
         } 
 
         [HttpGet("{id}")]
-        public IEnumerable<Evento> GetBy(int id)
+        // Retirando o IEnumerable pois não queremos que o retorno do database, venha dentro de colchetes e sim um array 
+        // Também retiramos o return (contexto.Eventos.Where) pois utilizaremos outro meio de retorno
+        // No caso pedimos o FirstOrDefault para nos retornar apenas um elemento
+        public Evento GetBy(int id)
         
             {
-                return _evento.Where(evento => evento.EventoId == id);    
+                return contexto.Eventos.FirstOrDefault(evento => evento.EventoId == id);    
             }
          
 
